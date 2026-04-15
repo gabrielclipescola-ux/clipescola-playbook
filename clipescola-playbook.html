@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playbook de Vendas · ClipEscola</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --surface2: #f0f2f5;
+    --border: #e2e6ea;
+    --border2: #c8cdd4;
+    --text: #1a1d23;
+    --text2: #5a6070;
+    --text3: #8a92a0;
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --amber: #EF9F27;
+    --amber-light: #FAEEDA;
+    --amber-mid: #FAC775;
+    --blue: #378ADD;
+    --blue-light: #E6F1FB;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  
+  /* HEADER */
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px; text-align: center; position: sticky; top: 0; z-index: 100; }
+  .header h1 { font-size: 18px; font-weight: 600; color: var(--text); }
+  .header p { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .clip-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; margin-bottom: 6px; border: 1px solid var(--green-mid); }
+
+  /* NAV */
+  .nav { display: flex; gap: 0; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; padding: 0 16px; }
+  .nav-btn { padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--text2); border: none; background: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* VIEWS */
+  .view { display: none; padding: 16px; max-width: 900px; margin: 0 auto; }
+  .view.active { display: block; }
+
+  /* SECTION GRID */
+  .section-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 14px; }
+  .section-btn { padding: 12px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: left; transition: all 0.12s; position: relative; }
+  .section-btn:hover { background: var(--surface2); border-color: var(--border2); }
+  .section-btn.active { border-color: var(--green); border-width: 2px; background: var(--surface); }
+  .sb-icon { font-size: 20px; display: block; margin-bottom: 5px; }
+  .sb-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .sb-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .sb-badge { position: absolute; top: 7px; right: 7px; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 10px; background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .active-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); position: absolute; bottom: 7px; right: 7px; }
+
+  /* PANEL */
+  .panel { border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; background: var(--surface2); }
+  .panel-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .tab-bar { display: flex; overflow-x: auto; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .tab-btn { padding: 9px 14px; font-size: 12px; font-weight: 500; color: var(--text2); border: none; background: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.1s; }
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+  .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab-content { padding: 14px; }
+
+  /* CARDS */
+  .item-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; margin-bottom: 7px; cursor: pointer; transition: all 0.12s; }
+  .item-card:hover { background: var(--surface2); }
+  .item-card.expanded { border-color: var(--green-mid); background: #fafffe; }
+  .ic-q { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.45; }
+  .ic-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .ic-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; display: inline-block; font-weight: 500; }
+  .ic-section { font-size: 11px; color: var(--text3); }
+  .tag-q { background: var(--blue-light); color: #185FA5; }
+  .tag-i { background: var(--amber-light); color: #854F0B; }
+  .tag-c { background: #EAF3DE; color: #3B6D11; }
+  .tag-r { background: var(--green-light); color: #0F6E56; }
+  .item-detail { font-size: 13px; color: var(--text2); line-height: 1.6; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: none; }
+  .item-card.expanded .item-detail { display: block; }
+
+  /* COMPARATIVO */
+  .comp-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .comp-col { padding: 10px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .comp-col-label { font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+  .comp-col-body { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .comp-vs { background: var(--amber-light); border-color: var(--amber-mid); }
+  .comp-vs .comp-col-label { color: #854F0B; }
+  .comp-clip { background: var(--green-light); border-color: var(--green-mid); }
+  .comp-clip .comp-col-label { color: #0F6E56; }
+  .sdiv { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 0 6px; }
+
+  /* GOLD */
+  .gold-header { text-align: center; padding: 1rem 0 0.5rem; }
+  .gold-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; background: var(--amber-light); color: #854F0B; border: 1px solid var(--amber-mid); margin-bottom: 8px; }
+  .gold-desc { font-size: 13px; color: var(--text2); max-width: 480px; margin: 0 auto; line-height: 1.5; }
+  .gold-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 10px; position: relative; overflow: hidden; background: var(--surface); }
+  .gold-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--amber); }
+  .gold-num { font-size: 11px; font-weight: 600; color: var(--text3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .gold-q { font-size: 15px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 8px; }
+  .gold-why { font-size: 13px; color: var(--text2); line-height: 1.55; margin-bottom: 10px; }
+  .gold-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .gold-tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+  /* PERSONAS */
+  .persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; margin-bottom: 12px; }
+  .persona-btn { padding: 14px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); cursor: pointer; text-align: center; transition: all 0.12s; }
+  .persona-btn:hover { background: var(--surface2); }
+  .persona-btn.active { border-color: var(--green); border-width: 2px; }
+  .pb-icon { font-size: 26px; display: block; margin-bottom: 6px; }
+  .pb-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .pb-role { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .persona-panel { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+  .pp-header { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .pp-name { font-size: 16px; font-weight: 600; color: var(--text); }
+  .pp-role { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .pp-body { padding: 14px; }
+  .pp-section { margin-bottom: 16px; }
+  .pp-label { font-size: 11px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .pain-pill { display: inline-block; font-size: 12px; padding: 4px 10px; border-radius: 20px; background: var(--surface2); color: var(--text); border: 1px solid var(--border); margin: 0 4px 4px 0; }
+  .tip-row { font-size: 13px; color: var(--text2); line-height: 1.5; padding: 7px 0; border-bottom: 1px solid var(--border); }
+  .tip-row:last-child { border: none; }
+  .tip-row strong { color: var(--text); font-weight: 600; }
+  .quote-box { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; background: var(--surface2); font-size: 13px; font-style: italic; color: var(--text2); line-height: 1.55; border-left: 4px solid var(--green); }
+
+  /* SEARCH */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-wrap input { width: 100%; padding: 10px 14px 10px 40px; font-size: 14px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .search-wrap input:focus { border-color: var(--green); }
+  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 15px; pointer-events: none; }
+  .search-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; align-items: center; }
+  .sf-label { font-size: 12px; color: var(--text2); margin-right: 2px; }
+  .sf-pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); color: var(--text2); cursor: pointer; transition: all 0.1s; background: var(--surface); font-weight: 500; }
+  .sf-pill:hover { background: var(--surface2); }
+  .sf-pill.fq.active { background: #185FA5; color: white; border-color: #185FA5; }
+  .sf-pill.fi.active { background: #854F0B; color: white; border-color: #854F0B; }
+  .sf-pill.fc.active { background: #3B6D11; color: white; border-color: #3B6D11; }
+  .sf-pill.fr.active { background: #0F6E56; color: white; border-color: #0F6E56; }
+  .search-count { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
+  mark { background: #FFF3CD; color: inherit; border-radius: 2px; padding: 0 1px; }
+  .empty { text-align: center; padding: 2.5rem; color: var(--text3); font-size: 14px; }
+
+  /* FOOTER */
+  .footer { text-align: center; padding: 2rem 1rem; color: var(--text3); font-size: 12px; border-top: 1px solid var(--border); margin-top: 2rem; }
+
+  @media (max-width: 480px) {
+    .section-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .comp-row { grid-template-columns: 1fr; }
+    .persona-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="clip-badge">🎓 ClipEscola</div>
+  <h1>Playbook de Vendas</h1>
+  <p>Objeções · Personas · Perguntas de Ouro · Busca Avançada</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="switchNav('objecoes',this)">🎯 Objeções</button>
+  <button class="nav-btn" onclick="switchNav('ouro',this)">⭐ Perguntas de Ouro</button>
+  <button class="nav-btn" onclick="switchNav('personas',this)">👤 Personas</button>
+  <button class="nav-btn" onclick="switchNav('busca',this)">🔍 Busca Avançada</button>
+</nav>
+
+<div id="view-objecoes" class="view active">
+  <div class="section-grid" id="sectionGrid"></div>
+  <div id="mainPanel"></div>
+</div>
+
+<div id="view-ouro" class="view">
+  <div class="gold-header">
+    <div class="gold-badge">⭐ As 5 Perguntas mais poderosas do Playbook</div>
+    <p class="gold-desc">Selecionadas pela capacidade de revelar a dor, criar urgência e abrir espaço para a Clip. Use uma por ligação para não parecer interrogatório.</p>
+  </div>
+  <div id="goldCards" style="margin-top:16px"></div>
+</div>
+
+<div id="view-personas" class="view">
+  <div class="persona-grid" id="personaGrid"></div>
+  <div id="personaPanel"></div>
+</div>
+
+<div id="view-busca" class="view">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input id="searchInput" placeholder="Buscar por palavra-chave: LGPD, inadimplência, rematrícula, agenda..." oninput="doSearch(this.value)">
+  </div>
+  <div class="search-filters">
+    <span class="sf-label">Filtrar:</span>
+    <button class="sf-pill fq" data-type="q" onclick="toggleFilter(this)">Pergunta-chave</button>
+    <button class="sf-pill fi" data-type="i" onclick="toggleFilter(this)">Implicação</button>
+    <button class="sf-pill fc" data-type="c" onclick="toggleFilter(this)">Contorno</button>
+    <button class="sf-pill fr" data-type="r" onclick="toggleFilter(this)">Como Resolve</button>
+  </div>
+  <div id="searchResults" class="empty">💡 Digite acima para buscar em todo o playbook</div>
+</div>
+
+<div class="footer">ClipEscola · Playbook de Vendas · Uso interno da equipe comercial</div>
+
+<script>
+const DATA = {
+  whatsapp:{icon:"💬",title:"WhatsApp",sub:"Está funcionando bem",badge:"Top",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Como vocês garantem que todos os pais realmente recebem e leem os comunicados?",tag:"q",detail:"Expõe a ausência de confirmação de leitura — maior fraqueza estrutural do WhatsApp."},
+        {q:"Quantos grupos vocês têm? Os grupos ficam abertos para todos falarem?",tag:"q",detail:"Revela o caos de gestão e o risco de situações difíceis com pais."},
+        {q:"Já aconteceu alguma situação difícil nos grupos? Pais pegando o número direto dos professores?",tag:"q",detail:"Traz à tona riscos trabalhistas e de LGPD que o cliente ainda não percebe."},
+        {q:"Quanto tempo por dia sua equipe passa respondendo mensagens no WhatsApp?",tag:"q",detail:"Multiplique por 5 e mostre as horas semanais — torna o custo de tempo concreto."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Se um pai importante nunca leu um comunicado urgente — como a escola soube? E quem assumiu a culpa?",tag:"i",detail:"Cria consciência do risco real de não ter confirmação de leitura."},
+        {q:"LGPD: ao criar grupos, os pais veem o número uns dos outros. Como a escola se protege?",tag:"i",detail:"Risco jurídico real — muitas escolas ainda não pensaram nisso."},
+        {q:"Se um professor responde um pai às 22h pelo WhatsApp pessoal, a escola tem responsabilidade trabalhista. Isso já aconteceu?",tag:"i",detail:"Risco trabalhista gera urgência imediata."},
+        {q:"Quais famílias estão desengajadas? Você consegue saber isso só pelo WhatsApp?",tag:"i",detail:"Conecta engajamento com rematrícula — famílias afastadas não renovam."},
+      ],
+      "Contorno":[
+        {q:"Que bom! A maioria das escolas usa WhatsApp porque os pais estão lá — e a Clip se integra diretamente com ele. A diferença é que a comunicação fica organizada e centralizada, sem depender de vários grupos.",tag:"c",detail:"Valide o uso atual, mas mostre a diferença estrutural."},
+        {q:"Entendo, mas o WhatsApp revela o número dos pais entre si, as informações se perdem e os colaboradores não conseguem desligar. A Clip resolve tudo isso com horário programado de respostas.",tag:"c",detail:"Para perfis técnicos ou com histórico de problemas nos grupos."},
+        {q:"Com a Clip, os responsáveis continuam usando o celular — mas com confirmação de leitura, canal oficial e sem grupos paralelos.",tag:"c",detail:"Bom para quem valoriza praticidade mas não percebe os riscos."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Canal oficial integrado ao WhatsApp — sem grupos caóticos e com confirmação de leitura",tag:"r",detail:"Comunicação ativa com controle total: histórico, confirmação, gestão central."},
+        {q:"Proteção LGPD — nenhum pai vê o número de outro responsável",tag:"r",detail:"Diferencial jurídico — cada vez mais escolas são autuadas por violação de dados em grupos."},
+        {q:"Horário programado de respostas — professores não são incomodados fora do expediente",tag:"r",detail:"Elimina risco trabalhista e melhora qualidade de vida da equipe."},
+        {q:"Relatórios de engajamento por família — dado estratégico para rematrícula",tag:"r",detail:"Saiba quais famílias leram e quais estão afastadas."},
+      ],
+    }
+  },
+  agenda:{icon:"📓",title:"Agenda Física",sub:"Pais preferem a agenda",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Como acompanham se os responsáveis realmente recebem e leem as anotações da agenda?",tag:"q",detail:"Expõe que não há confirmação — a criança pode não entregar ou rasurar."},
+        {q:"Quais tipos de recados costumam gerar mais dúvidas ou precisam ser reforçados?",tag:"q",detail:"Identifica onde a agenda falha na prática."},
+        {q:"Em famílias com pais separados, como garantem que os dois responsáveis receberam o recado?",tag:"q",detail:"Ponto crítico — um dos pais alega desconhecimento com frequência."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Se a agenda é ferramenta pedagógica, quem cuida dos recados administrativos urgentes?",tag:"i",detail:"Separa uso pedagógico do administrativo — cria espaço para a Clip complementar."},
+        {q:"Já aconteceu de uma criança 'sumir' com a agenda ou o recado não chegar? Quem ficou com a culpa?",tag:"i",detail:"Situação real que gera risco jurídico para a escola."},
+        {q:"Quanto custa por aluno/mês a impressão, papel e cola da agenda? Já calcularam?",tag:"i",detail:"Escolas gastam em média R$6/aluno/mês com comunicação física."},
+      ],
+      "Contorno":[
+        {q:"Faz sentido! Muitas escolas tinham essa percepção — mas perceberam que os pais se adaptam rápido porque já fazem tudo pelo celular. A Clip não elimina a agenda pedagógica, separa o papel de cada canal.",tag:"c",detail:"Não confronte a agenda como 'errada'. Posicione a Clip como complemento."},
+        {q:"Algumas escolas continuam usando a agenda para fins pedagógicos e usam a Clip para recados administrativos e cobranças. O melhor dos dois mundos.",tag:"c",detail:"Modelo híbrido é o argumento mais forte para educação infantil."},
+        {q:"A Clip tem validade jurídica — todas as comunicações têm confirmação de entrega e leitura. A agenda não oferece isso.",tag:"c",detail:"Argumento para casos de inadimplência ou disputas com pais."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Confirmação de leitura e validade jurídica em cada comunicado",tag:"r",detail:"A escola tem prova de que o pai recebeu — fundamental em casos de cobrança ou conflito."},
+        {q:"Histórico digital da vida escolar do aluno — sem ocupar memória no celular",tag:"r",detail:"Armazenado em nuvem, acessível por todos os responsáveis simultaneamente."},
+        {q:"Comunicação para múltiplos responsáveis ao mesmo tempo (pais separados, avós)",tag:"r",detail:"Cada responsável cadastrado recebe — ninguém alega desconhecimento."},
+        {q:"Redução de até 70% do gasto com impressão, papel, SMS e ligações",tag:"r",detail:"Média de R$6/aluno/mês que a Clip elimina ou reduz drasticamente."},
+      ],
+    }
+  },
+  sistema:{icon:"🖥️",title:"Sistema de Gestão",sub:"Já temos app do ERP",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Quantos pais realmente usam o app do sistema hoje? Qual é a taxa de acesso semanal?",tag:"q",detail:"Engajamento baixo é quase universal — o app do ERP é pouco acessado."},
+        {q:"Os pais ainda mandam mensagem pelo WhatsApp mesmo tendo o app?",tag:"q",detail:"Se sim, o app do sistema não cumpre o papel de comunicação."},
+        {q:"Quando um pai precisa falar com o financeiro, como a escola organiza isso?",tag:"q",detail:"Revela que o ERP cobre o interno mas não a comunicação escola-família."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"O portal exige login e senha. Quantas vezes os pais precisam redefinir a senha? Isso já gerou reclamações?",tag:"i",detail:"Acesso passivo é a maior fraqueza do portal — a Clip é push (notificação ativa)."},
+        {q:"Se o pai não acessa o portal e perde uma informação importante, como a escola detecta?",tag:"i",detail:"Expõe a ausência de confirmação de leitura no modelo portal/ERP."},
+        {q:"O sistema de gestão cuida do que acontece dentro da escola. E a comunicação com as famílias — quem garante que chega?",tag:"i",detail:"Posiciona a Clip no gap que todo ERP deixa."},
+      ],
+      "Contorno":[
+        {q:"Muitas escolas que atendemos também usam o app do sistema, mas os pais não acessam com a frequência desejada. O app do sistema cuida do interno — a Clip cuida da comunicação com as famílias.",tag:"c",detail:"Não concorra com o ERP, posicione como complemento especializado."},
+        {q:"A Clip faz integração com seu sistema de gestão — os dados fluem automaticamente, sem retrabalho para a equipe.",tag:"c",detail:"Elimina o argumento 'mais uma ferramenta para gerenciar'."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Notificação ativa (push) — o pai recebe no celular sem precisar acessar portal",tag:"r",detail:"Comunicação ativa vs. acesso passivo. Taxa de engajamento muito maior."},
+        {q:"Integração com o ERP: dados sincronizados, sem retrabalho",tag:"r",detail:"A Clip complementa o ERP — comunicação para fora dos portões."},
+        {q:"Autorizações, aviso de chegada, confirmação de leitura — funções que o portal não oferece",tag:"r",detail:"Funcionalidades exclusivas que resolvem dores diárias da secretaria."},
+      ],
+    }
+  },
+  dinheiro:{icon:"💰",title:"Orçamento",sub:"Não tenho dinheiro agora",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Vocês estão sem orçamento agora ou sentem que investir nisso não faria sentido?",tag:"q",detail:"Distingue objeção financeira real de objeção de valor — respostas muito diferentes."},
+        {q:"Se orçamento não fosse problema, vocês considerariam melhorar a comunicação?",tag:"q",detail:"Se sim, o problema é orçamento. Se não, é valor percebido."},
+        {q:"Como funciona o processo de aprovação de novos investimentos? Existe ciclo anual?",tag:"q",detail:"Entende o processo de decisão para planejar o timing."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Quando a comunicação falha — pais mal informados, recados perdidos — qual o impacto na rematrícula? E na inadimplência?",tag:"i",detail:"Conecta comunicação deficiente com perdas financeiras concretas."},
+        {q:"Escolas gastam em média R$6 por aluno/mês com comunicação tradicional. Quantos alunos vocês têm? Já calcularam esse custo?",tag:"i",detail:"Ajuda a reposicionar o investimento na Clip como economia, não gasto."},
+        {q:"Se a melhora na comunicação retiver apenas 2 alunos a mais por ano, já cobre o investimento. Faz sentido calcular juntos?",tag:"i",detail:"ROI simples e poderoso — use a mensalidade média da escola como base."},
+      ],
+      "Contorno":[
+        {q:"A Clip reduz custos com impressão, SMS e ligações em até 70%. O investimento se paga com a própria economia.",tag:"c",detail:"Reframe: não é custo novo, é troca de custo ineficiente por eficiente."},
+        {q:"Não vamos falar de preço agora. A ideia é você conhecer o valor primeiro — depois encontramos a condição certa.",tag:"c",detail:"Para objeção prematura antes mesmo de ver a demonstração."},
+        {q:"O investimento varia conforme o número de alunos. Para um número exato, posso agendar 10 minutos com um especialista?",tag:"c",detail:"Use quando o lead insiste em saber o preço antes da demo."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Redução de até 70% nos custos de comunicação (papel, impressão, SMS, ligações)",tag:"r",detail:"Custo médio atual: R$6/aluno/mês. A Clip reduz e entrega muito mais."},
+        {q:"Automação de cobrança — reduz inadimplência e tempo da equipe financeira",tag:"r",detail:"Alertas automáticos, confirmação de recebimento — impacto direto no caixa."},
+        {q:"Retenção de alunos: comunicação de qualidade é fator decisivo na rematrícula",tag:"r",detail:"40% das saídas de alunos têm comunicação deficiente como fator."},
+      ],
+    }
+  },
+  momento:{icon:"⏰",title:"Não É o Momento",sub:"Não é prioridade agora",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Por que agora não seria o momento ideal? É por conta de [reforma / reestruturação / fechamento de semestre]?",tag:"q",detail:"Entenda a causa real — obstáculo temporário ou desculpa?"},
+        {q:"Qual seria o momento ideal? O que precisa acontecer primeiro?",tag:"q",detail:"Comprometa o lead com uma data futura e coloque no pipeline."},
+        {q:"Como está a comunicação com os responsáveis durante esse período? Tem gerado alguma dificuldade?",tag:"q",detail:"Quem está mais sobrecarregado muitas vezes é quem mais precisa da Clip."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"No segundo semestre vêm as rematrículas. Vai ficar ainda mais corrido. Se não é agora, quando?",tag:"i",detail:"Mostre que adiar não resolve — a demanda só aumenta."},
+        {q:"Quão importante é o relacionamento com as famílias para a escola? Se a comunicação melhorar, qual o impacto nas rematrículas deste ano?",tag:"i",detail:"Conecta o 'não é prioridade' com resultado que o cliente valoriza."},
+      ],
+      "Contorno":[
+        {q:"Algumas escolas que passavam por [reforma/reestruturação] perceberam que organizar a comunicação ajudou a evitar preocupações extras com os pais nesse período.",tag:"c",detail:"Valide o momento difícil e mostre que a Clip ajuda exatamente aí."},
+        {q:"Tudo bem, entendo o momento. Posso te chamar no WhatsApp mais perto de [data]? Assim você já fica no radar sem precisar buscar solução de última hora.",tag:"c",detail:"Nunca feche sem data de retorno combinada."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Implementação em menos de 30 dias com Gerente de Sucesso dedicado",tag:"r",detail:"Processo estruturado que minimiza impacto operacional para a equipe."},
+        {q:"Comunicação organizada reduz sobrecarga — especialmente em períodos de crise",tag:"r",detail:"Menos ligações, menos mensagens dispersas, menos retrabalho."},
+      ],
+    }
+  },
+  pequena:{icon:"🏫",title:"Escola Pequena",sub:"Escola pequena, não precisa",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Hoje como vocês se comunicam com os pais? Quanto tempo a equipe passa por dia com ligações e mensagens?",tag:"q",detail:"Mapeia o custo de tempo — escolas pequenas têm equipes reduzidas e sentem mais."},
+        {q:"Vocês têm capacidade para mais alunos? Se tivessem, como gerenciariam a comunicação com mais famílias?",tag:"q",detail:"Cria visão de futuro — escalar sem escalar o trabalho manual."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"6 de cada 10 escolas privadas no Brasil têm menos de 200 alunos e já usam a Clip. O que perceberam é que o tamanho não importa — a dor de comunicação é a mesma. Vocês sentem isso?",tag:"i",detail:"Quebra a crença de que 'pequeno não precisa' com dado de mercado."},
+        {q:"Quantas pessoas na equipe respondem mensagens de pais? Se esse tempo fosse liberado, o que fariam com ele?",tag:"i",detail:"Fazer o lead imaginar o ganho de tempo cria urgência real."},
+      ],
+      "Contorno":[
+        {q:"Entendo! 6 de cada 10 escolas privadas têm menos de 200 alunos e muitas usam a Clip. Mesmo sendo menores, percebem que a comunicação toma tempo e pode ser mais organizada.",tag:"c",detail:"Dado de mercado quebra percepção de que a Clip é 'só para grandes'."},
+        {q:"Escolas pequenas precisam mais de automação, não menos — justamente porque a equipe é reduzida.",tag:"c",detail:"Inverta a lógica: tamanho pequeno = mais necessidade de eficiência."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Preço proporcional ao tamanho — plano para qualquer porte",tag:"r",detail:"A Clip não cobra igual para escola de 50 e de 2000 alunos."},
+        {q:"Automação das comunicações diárias — libera equipe pequena para o que importa",tag:"r",detail:"Avisos automáticos, lembretes de eventos, cobranças — sem precisar de mais gente."},
+      ],
+    }
+  },
+  concorrentes:{icon:"🏆",title:"Concorrentes",sub:"ClassApp, AgendaEdu e outros",badge:"New",
+    tabs:{
+      "Visão Geral":[
+        {q:"O que você mais usa na ferramenta atual? O que te deixa mais satisfeito?",tag:"q",detail:"Entenda o que o cliente valoriza — isso te diz onde focar na comparação."},
+        {q:"Além dessa ferramenta, a escola usa algum outro canal? WhatsApp, e-mail, bilhetes?",tag:"q",detail:"Se usa múltiplos canais, a ferramenta não resolve 100% — e a Clip pode unificar."},
+        {q:"Até quando vai o contrato? Posso te chamar no WhatsApp quando estiver perto do fim?",tag:"q",detail:"Pipeline de longo prazo — combine data de retorno e registre."},
+      ],
+      "ClassApp":[
+        {q:"ClassApp vs. Clip: integração com ERP e módulo financeiro completo",tag:"r",detail:"ClassApp: comunicação básica, freemium limitado, menor integração ERP.\nClipEscola: módulo financeiro completo, integração nativa ERPs, 20+ anos no mercado, validade jurídica."},
+        {q:"Como está o engajamento dos pais no ClassApp? Todos estão usando ativamente?",tag:"q",detail:"Abre espaço para mostrar onde a Clip supera em termos de adoção."},
+        {q:"Até quando vai a gratuidade/contrato com eles? Posso te chamar próximo ao vencimento?",tag:"q",detail:"Plante a semente para colher na renovação."},
+        {q:"Que ótimo! Muitas escolas aproveitam essas campanhas para testar. Se no futuro sentirem que precisam de algo mais robusto, a Clip está à disposição.",tag:"c",detail:"Tom respeitoso, sem atacar. Plante a semente e combine retorno."},
+      ],
+      "AgendaEdu":[
+        {q:"AgendaEdu vs. Clip: ecossistema completo vs. agenda básica",tag:"r",detail:"AgendaEdu: agenda digital básica, foco infantil, menos funcionalidades financeiras.\nClipEscola: agenda + comunicação + financeiro + relatórios + integração ERP. Atende Infantil ao Médio."},
+        {q:"O financeiro da escola usa a ferramenta também ou é um processo separado?",tag:"q",detail:"Se separado, mostra fragmentação que a Clip resolve com módulo financeiro integrado."},
+        {q:"Que bom que já usam uma agenda digital! A diferença da Clip é que ela não é só agenda — é um ecossistema completo de comunicação, engajamento e financeiro.",tag:"c",detail:"Posicionamento direto sem desmerecer o concorrente."},
+      ],
+      "ERP com App":[
+        {q:"Quantos pais realmente acessam o app do sistema semanalmente?",tag:"q",detail:"Engajamento baixo quase sempre confirma que o app do ERP não cumpre o papel."},
+        {q:"Os pais ainda mandam WhatsApp mesmo tendo o app?",tag:"q",detail:"Se sim, o app do ERP não resolve — e a Clip complementa."},
+        {q:"A suposta gratuidade do app geralmente está embutida no valor do ERP. Vale comparar o custo real.",tag:"c",detail:"Use com cuidado — bom quando o cliente acredita que o ERP é de graça."},
+        {q:"ERP cuida do interno. A Clip cuida da comunicação para fora dos portões — as duas se somam.",tag:"c",detail:"Posicionamento complementar, nunca substitutivo."},
+      ],
+      "Melhores Contornos":[
+        {q:"Já usam solução digital — 'Que bom! Uma coisa que escolas que vieram do [concorrente] perceberam é que a falta de integração com o financeiro gerava retrabalho. Isso acontece com vocês?'",tag:"c",detail:"Abre conversa sem atacar diretamente."},
+        {q:"Gratuidade do concorrente — 'Ótimo! Até quando vai essa gratuidade? Posso te chamar no WhatsApp quando estiver perto do fim?'",tag:"c",detail:"Plante a semente agora para colher na renovação."},
+        {q:"Trauma com app anterior — 'O que você não gostou? A Clip tem treinamento fácil e uso intuitivo — e posso te mostrar o que mudou.'",tag:"c",detail:"Transforma experiência ruim anterior em abertura para a Clip."},
+        {q:"Acha que é tudo igual — 'Pesquisamos mais de 200 escolas e desenvolvemos a plataforma mais completa do mercado. Posso te mostrar nossos diferenciais em 15 minutos?'",tag:"c",detail:"Para quem diz 'já vi tudo, é tudo igual'."},
+      ],
+    }
+  },
+  ti:{icon:"🔧",title:"TI Desenvolvendo App",sub:"Construindo internamente",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"O que esse app vai entregar para vocês? Por que sentiram necessidade de desenvolver?",tag:"q",detail:"Entenda a dor original — provavelmente é algo que a Clip já resolve."},
+        {q:"Quanto tempo e dinheiro vocês estão investindo? A ideia era ser mais barato?",tag:"q",detail:"Desenvolvimento interno quase sempre sai mais caro do que parece."},
+        {q:"Vocês calcularam o custo de manutenção, atualizações e suporte após o lançamento?",tag:"q",detail:"O custo total de posse raramente é calculado — e é enorme."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Manter um app exige equipe técnica dedicada, atualizações frequentes e suporte constante. Isso está no orçamento?",tag:"i",detail:"Traz à tona custos ocultos que o cliente não considerou."},
+        {q:"Se o profissional de TI que está desenvolvendo sair da escola, como fica a continuidade?",tag:"i",detail:"Dependência de pessoa-chave é risco crítico para projetos internos."},
+      ],
+      "Contorno":[
+        {q:"Algumas escolas começaram desenvolvendo internamente mas perceberam que manter um app exige muito. Uma ferramenta pronta com custo justo sai menos que o desconto de mensalidade dado para o pai-desenvolvedor.",tag:"c",detail:"Argumento financeiro direto."},
+        {q:"A Clip já está completa — sem custos de desenvolvimento interno. Sugiro conhecer e comparar antes de continuar.",tag:"c",detail:"Posiciona a demo como decisão racional de comparação de custos."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Solução pronta e atualizada — sem custo de desenvolvimento, manutenção ou suporte",tag:"r",detail:"A Clip investe continuamente — mais de 200 funcionalidades já desenvolvidas."},
+        {q:"Gerente de Sucesso dedicado — implementação em menos de 30 dias",tag:"r",detail:"Risco de dependência de pessoa-chave eliminado."},
+      ],
+    }
+  },
+  rede:{icon:"🔗",title:"Sem Autonomia / Rede",sub:"Faço parte de uma rede",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Como funciona o fluxo de decisão na rede? Quem é a pessoa ideal para eu conversar?",tag:"q",detail:"Mapeie o processo antes de investir mais tempo."},
+        {q:"Você se vê como influenciador? Suas recomendações costumam ser consideradas?",tag:"q",detail:"Descubra se a pessoa pode ser um champion interno."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Muitas redes têm dificuldade de padronizar a comunicação entre unidades. A rede de vocês tem esse desafio?",tag:"i",detail:"Posiciona a Clip como solução de escala para o problema da rede inteira."},
+      ],
+      "Contorno":[
+        {q:"Muitas escolas em redes conseguem influenciar melhorias mesmo sem autonomia total. Se puder me passar o contato do responsável, posso compartilhar como outras redes estão estruturando isso.",tag:"c",detail:"Transforme o gatekeeper em aliado."},
+        {q:"Posso te mandar material personalizado para você apresentar internamente. Seria mais fácil assim?",tag:"c",detail:"Reduza a fricção para o champion interno."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Gestão multi-unidade — visibilidade consolidada de todas as escolas da rede",tag:"r",detail:"Redes conseguem ver engajamento por unidade e comparar performance."},
+        {q:"Padronização de comunicação com identidade da rede em todas as unidades",tag:"r",detail:"Branding consistente, mensagens alinhadas."},
+      ],
+    }
+  },
+  email:{icon:"📧",title:"Só por E-mail",sub:"Secretária filtra / Firewall",
+    tabs:{
+      "Perguntas-Chave":[
+        {q:"Qual o melhor e-mail para o responsável pela comunicação? Aos cuidados de quem?",tag:"q",detail:"Se só há e-mail genérico, saia pelo menos com o nome do decisor."},
+        {q:"Como costuma funcionar a apresentação de novos fornecedores para a direção?",tag:"q",detail:"Entenda o processo para adaptar a abordagem."},
+      ],
+      "Perguntas de Implicação":[
+        {q:"Com o ClipEscola, informações chegam mais rápido a você — quando pais ou colegas perguntarem, você já tem a resposta. Isso seria útil no seu dia a dia?",tag:"i",detail:"Para secretárias: posicione a Clip como ferramenta que as faz brilhar internamente."},
+      ],
+      "Contorno":[
+        {q:"Ah, claro! Qual o melhor e-mail? Só para garantir que o material faça sentido — como está a experiência de vocês com [comunicação / engajamento dos pais]?",tag:"c",detail:"Valide o canal mas extraia informação diagnóstica ao mesmo tempo."},
+        {q:"'Você tem um papel muito importante — quem recebe as primeiras informações, críticas, sugestões? A Clip vai ajudar exatamente nisso.' (para secretária bloqueando)",tag:"c",detail:"Faça a secretária se sentir importante — ela pode virar sua aliada."},
+      ],
+      "Como a Clip Resolve":[
+        {q:"Canal oficial — substitui e-mails genéricos por comunicação estruturada e rastreável",tag:"r",detail:"Toda comunicação documentada: quem enviou, quem leu, quando."},
+        {q:"Secretária como central de atendimento: direciona pais com controle total",tag:"r",detail:"A Clip organiza o fluxo — secretária ganha eficiência, não mais trabalho."},
+      ],
+    }
+  },
+};
+
+const GOLD = [
+  {num:"01",q:"Como vocês garantem que todos os pais realmente receberam e leram os comunicados importantes?",why:"Nenhum canal informal garante isso. A pergunta expõe em segundos o maior risco operacional e jurídico da comunicação por WhatsApp, agenda ou bilhetes. Abre a porta para falar de confirmação de leitura e validade jurídica.",tags:["WhatsApp","Agenda Física","Todos os perfis"]},
+  {num:"02",q:"Se a melhora na comunicação retiver apenas 2 alunos a mais por ano, o investimento já se paga. Faz sentido calcular juntos?",why:"Transforma objeção de custo em conversa de ROI. Usa a própria métrica do cliente (mensalidade média) para mostrar que a Clip custa menos do que parece e entrega mais do que economiza.",tags:["Orçamento","Financeiro","Diretor"]},
+  {num:"03",q:"LGPD: ao criar grupos de WhatsApp, os pais veem o número de todos os outros responsáveis. Como a escola se protege em relação à proteção de dados?",why:"Pouquíssimas escolas pensaram nesse risco. A pergunta cria urgência real, posiciona a Clip como solução jurídica e diferencia de qualquer concorrente que não tenha esse argumento.",tags:["WhatsApp","LGPD","Diretor","Financeiro"]},
+  {num:"04",q:"Quantos pais realmente acessam o app do sistema semanalmente — e os outros, como ficam informados?",why:"Expõe o baixo engajamento do portal do ERP de forma não agressiva. O próprio cliente vai confirmar que o app do sistema não funciona bem — e abrir espaço para a Clip como complemento.",tags:["Sistema de Gestão","ERP","Concorrentes"]},
+  {num:"05",q:"Quais famílias estão desengajadas da escola hoje? Você consegue identificar isso com a ferramenta atual?",why:"Conecta dado de engajamento com rematrícula e retenção — o que todo gestor escolar teme perder. Nenhum WhatsApp ou portal responde essa pergunta. A Clip responde com relatórios em tempo real.",tags:["WhatsApp","Rematrícula","Engajamento","Todos os perfis"]},
+];
+
+const PERSONAS = {
+  secretaria:{icon:"🗂️",name:"Secretária",role:"Gatekeeper · Influenciadora",headerColor:"#E6F1FB",borderColor:"#378ADD",
+    pains:["Sobrecarregada com ligações e mensagens","Filtrar contatos para a direção","Sem reconhecimento pelo trabalho"],
+    dores_clip:["Reduz o volume de ligações e WhatsApps que chegam para ela","Torna-a a central de atendimento organizada e valorizada","Ela pode ser a heroína da implementação"],
+    abertura:"Você tem um papel muito importante na escola — quem recebe as primeiras informações, críticas e sugestões? A Clip vai ajudar exatamente nisso.",
+    cuidados:["Nunca a trate como obstáculo — ela pode virar sua maior aliada","Mostre como a Clip facilita o trabalho dela, não só da direção","Ofereça material simples para ela apresentar internamente"],
+    perguntas:["Como você organiza os recados que chegam para passar para a direção?","Quanto tempo por dia você passa respondendo mensagens de pais?","Se você pudesse eliminar 50% das ligações repetitivas, o que faria com esse tempo?"],
+    tags:["Só por E-mail","Sem Autonomia / Rede"],
+  },
+  diretor:{icon:"👔",name:"Diretor / Mantenedor",role:"Decisor final · Foco em resultado",headerColor:"#E1F5EE",borderColor:"#1D9E75",
+    pains:["ROI e custo-benefício de qualquer investimento","Inadimplência e retenção de alunos","Imagem da escola e diferencial competitivo"],
+    dores_clip:["Comunicação como fator de retenção e rematrícula","Redução de custos operacionais mensuráveis","Posicionamento competitivo frente a escolas digitais"],
+    abertura:"Diretor, quero te mostrar como escolas similares à sua reduziram custos de comunicação em 70% e melhoraram a taxa de rematrícula. São 15 minutos — pode ser agora?",
+    cuidados:["Vá direto ao ROI — sem rodeios","Use dados concretos: R$6/aluno/mês, 70% de redução, 2 alunos retidos pagam o investimento","Nunca comece por funcionalidades — comece sempre por resultado"],
+    perguntas:["Qual é a sua maior preocupação com a comunicação com os pais hoje?","Inadimplência e evasão — como a escola está gerenciando isso?","Se eu te mostrasse como outras escolas reduziram custos e aumentaram rematrícula, você teria 15 minutos?"],
+    tags:["Orçamento","Não É o Momento","Concorrentes"],
+  },
+  coordenador:{icon:"📋",name:"Coordenador / Pedagógico",role:"Influenciador · Foco em rotina",headerColor:"#FAEEDA",borderColor:"#EF9F27",
+    pains:["Tempo tomado por comunicação operacional","Pais não acompanham o desenvolvimento dos alunos","Agenda física ineficiente e difícil de controlar"],
+    dores_clip:["Automatiza avisos pedagógicos e de eventos","Relatório de engajamento por família","Histórico digital do aluno — sem depender da agenda física"],
+    abertura:"Coordenador, sei que seu tempo é curto. Quero entender como está a comunicação com os pais sobre o dia a dia pedagógico — e te mostrar como outras escolas economizaram horas por semana.",
+    cuidados:["Fale a língua pedagógica — não financeira","Mostre que a Clip facilita a rotina dele, não cria mais trabalho","Agenda híbrida (física + digital) funciona bem para convencer coordenadores de infantil"],
+    perguntas:["Quais recados geram mais retrabalho — precisam ser repetidos várias vezes para os pais?","Como acompanham quais famílias estão desengajadas do processo escolar?","Se soubesse em tempo real quais pais não leram um comunicado importante, o que faria diferente?"],
+    tags:["Agenda Física","WhatsApp","Sistema de Gestão"],
+  },
+  financeiro:{icon:"💳",name:"Responsável Financeiro",role:"Influenciador · Foco em custo",headerColor:"#EAF3DE",borderColor:"#639922",
+    pains:["Inadimplência e dificuldade de cobrança","Processos manuais e retrabalho financeiro","Custo operacional de comunicação"],
+    dores_clip:["Cobrança automatizada com confirmação de entrega e leitura","Validade jurídica das notificações de inadimplência","Fala direto com o responsável pelo pagamento (avó, padrasto, etc.)"],
+    abertura:"Como você é do financeiro, vamos diferente: me deixa entender seu processo de cobrança — talvez eu consiga até reduzir seus custos operacionais. Como você cobra o pai hoje?",
+    cuidados:["Fale primeiro em economia, não em funcionalidade","Validade jurídica é argumento ouro para o financeiro","Apresente o módulo de cobrança antes de qualquer outra funcionalidade"],
+    perguntas:["Como funciona o processo de cobrança quando um pai está inadimplente?","Vocês emitem boletos? Quanto pagam de taxa para alterar datas?","Se um pai deixa de pagar, quantas ligações e mensagens são necessárias até resolver?"],
+    tags:["Orçamento","Agenda Física"],
+  },
+};
+
+let activeSection=null, activeTab={}, expandedItems={}, activePersona=null;
+let searchFilters=new Set(), searchQuery='';
+
+function switchNav(view,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  btn.classList.add('active');
+  if(view==='ouro') renderGold();
+  if(view==='personas') renderPersonas();
+}
+
+function renderSections(){
+  const g=document.getElementById('sectionGrid');
+  g.innerHTML=Object.entries(DATA).map(([k,s])=>`
+    <button class="section-btn${activeSection===k?' active':''}" onclick="toggleSection('${k}')">
+      <span class="sb-icon">${s.icon}</span>
+      <span class="sb-title">${s.title}</span>
+      <span class="sb-sub">${s.sub}</span>
+      ${s.badge?`<span class="sb-badge">${s.badge}</span>`:''}
+      ${activeSection===k?'<span class="active-dot"></span>':''}
+    </button>`).join('');
+}
+
+function toggleSection(k){
+  activeSection=activeSection===k?null:k;
+  if(activeSection&&!activeTab[k]) activeTab[k]=Object.keys(DATA[k].tabs)[0];
+  renderSections(); renderPanel();
+  if(activeSection) setTimeout(()=>document.getElementById('mainPanel').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function setTab(k,t){activeTab[k]=t; renderPanel();}
+function toggleItem(id){expandedItems[id]=!expandedItems[id]; renderPanel();}
+function togglePersonaItem(id){expandedItems[id]=!expandedItems[id]; renderPersonas();}
+
+function renderPanel(){
+  const p=document.getElementById('mainPanel');
+  if(!activeSection){p.innerHTML='';return;}
+  const s=DATA[activeSection], ct=activeTab[activeSection];
+  const tabs=Object.keys(s.tabs);
+  const tagMap={q:'tag-q',i:'tag-i',c:'tag-c',r:'tag-r'};
+  const tagLabel={q:'pergunta-chave',i:'implicação',c:'contorno',r:'como resolve'};
+  let content='';
+
+  const compMap={
+    ClassApp:{v1:"Comunicação básica. Freemium com funcionalidades limitadas. Menor integração com ERP.",v2:"Módulo financeiro completo, integração nativa ERPs, 20+ anos, validade jurídica das comunicações."},
+    AgendaEdu:{v1:"Agenda básica, foco infantil. Poucas funcionalidades financeiras e relatórios.",v2:"Agenda + comunicação + financeiro + relatórios + integração ERP. Atende Infantil ao Médio."},
+    "ERP com App":{v1:"App bundled, acesso passivo (login/senha). Baixo engajamento. Poucas funções de comunicação ativa.",v2:"Push ativo (notificação). Complementa o ERP. Alta taxa de engajamento. Autorizações, confirmação de leitura, relatórios."},
+  };
+
+  if(compMap[ct]){
+    const cd=compMap[ct];
+    content=`<div class="comp-row"><div class="comp-col comp-vs"><div class="comp-col-label">${ct}</div><div class="comp-col-body">${cd.v1}</div></div><div class="comp-col comp-clip"><div class="comp-col-label">ClipEscola</div><div class="comp-col-body">${cd.v2}</div></div></div>`;
+    const items=s.tabs[ct]||[];
+    const qs=items.filter(i=>i.tag==='q'), cs=items.filter(i=>i.tag==='c');
+    if(qs.length) content+=`<div class="sdiv">Perguntas</div>`+qs.map((item,idx)=>{const id=`${activeSection}_${ct}_q${idx}`;return cardHTML(item,id,tagMap,tagLabel);}).join('');
+    if(cs.length) content+=`<div class="sdiv">Contornos</div>`+cs.map((item,idx)=>{const id=`${activeSection}_${ct}_c${idx}`;return cardHTML(item,id,tagMap,tagLabel);}).join('');
+  } else {
+    const items=s.tabs[ct]||[];
+    content=items.length===0?`<div class="empty">Nenhum item nesta aba</div>`:items.map((item,idx)=>{const id=`${activeSection}_${ct}_${idx}`;return cardHTML(item,id,tagMap,tagLabel);}).join('');
+  }
+  p.innerHTML=`<div class="panel"><div class="panel-header"><span style="font-size:18px">${s.icon}</span><span class="panel-title">${s.title}</span></div><div class="tab-bar">${tabs.map(t=>`<button class="tab-btn${ct===t?' active':''}" onclick="setTab('${activeSection}','${t}')">${t}</button>`).join('')}</div><div class="tab-content">${content}</div></div>`;
+}
+
+function cardHTML(item,id,tagMap,tagLabel){
+  const isE=expandedItems[id];
+  return`<div class="item-card${isE?' expanded':''}" onclick="toggleItem('${id}')"><div class="ic-q">${item.q}</div><div class="ic-meta"><span class="ic-tag ${tagMap[item.tag]}">${tagLabel[item.tag]}</span></div>${item.detail?`<div class="item-detail">${item.detail}</div>`:''}</div>`;
+}
+
+function renderGold(){
+  document.getElementById('goldCards').innerHTML=GOLD.map(g=>`
+    <div class="gold-card">
+      <div class="gold-num">Pergunta ${g.num}</div>
+      <div class="gold-q">${g.q}</div>
+      <div class="gold-why">${g.why}</div>
+      <div class="gold-tags">${g.tags.map(t=>`<span class="gold-tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderPersonas(){
+  const pg=document.getElementById('personaGrid');
+  pg.innerHTML=Object.entries(PERSONAS).map(([k,p])=>`
+    <button class="persona-btn${activePersona===k?' active':''}" onclick="togglePersona('${k}')">
+      <span class="pb-icon">${p.icon}</span>
+      <span class="pb-name">${p.name.split('/')[0].trim()}</span>
+      <span class="pb-role">${p.role.split('·')[0].trim()}</span>
+    </button>`).join('');
+  const pp=document.getElementById('personaPanel');
+  if(!activePersona){pp.innerHTML='';return;}
+  const p=PERSONAS[activePersona];
+  pp.innerHTML=`<div class="persona-panel">
+    <div class="pp-header" style="background:${p.headerColor};border-left:4px solid ${p.borderColor}">
+      <div class="pp-name">${p.icon} ${p.name}</div>
+      <div class="pp-role">${p.role}</div>
+    </div>
+    <div class="pp-body">
+      <div class="pp-section">
+        <div class="pp-label">Principais dores</div>
+        <div>${p.pains.map(x=>`<span class="pain-pill">⚡ ${x}</span>`).join('')}</div>
+      </div>
+      <div class="pp-section">
+        <div class="pp-label">Abertura recomendada</div>
+        <div class="quote-box">"${p.abertura}"</div>
+      </div>
+      <div class="pp-section">
+        <div class="pp-label">Perguntas ideais para esta persona</div>
+        ${p.perguntas.map((q,i)=>{const id=`persona_${activePersona}_${i}`;return`<div class="item-card${expandedItems[id]?' expanded':''}" onclick="togglePersonaItem('${id}')"><div class="ic-q">${q}</div><div class="ic-meta"><span class="ic-tag tag-q">pergunta</span></div><div class="item-detail">Use com ${p.name.split('/')[0].trim().toLowerCase()} para revelar a dor principal e criar urgência de agenda.</div></div>`;}).join('')}
+      </div>
+      <div class="pp-section">
+        <div class="pp-label">Como a Clip resolve as dores desta persona</div>
+        ${p.dores_clip.map(x=>`<div class="tip-row"><strong>✓</strong> ${x}</div>`).join('')}
+      </div>
+      <div class="pp-section">
+        <div class="pp-label">Cuidados ao abordar</div>
+        ${p.cuidados.map(x=>`<div class="tip-row">→ ${x}</div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function togglePersona(k){activePersona=activePersona===k?null:k; renderPersonas();}
+
+function toggleFilter(btn){
+  const t=btn.dataset.type;
+  if(searchFilters.has(t)){searchFilters.delete(t);btn.classList.remove('active');}
+  else{searchFilters.add(t);btn.classList.add('active');}
+  doSearch(searchQuery);
+}
+
+function highlight(text,q){
+  if(!q) return text;
+  return text.replace(new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'),'<mark>$1</mark>');
+}
+
+function doSearch(val){
+  searchQuery=val.toLowerCase().trim();
+  const res=document.getElementById('searchResults');
+  const all=[];
+  Object.entries(DATA).forEach(([sk,s])=>{
+    Object.entries(s.tabs).forEach(([tk,items])=>{
+      items.forEach(item=>all.push({...item,section:s.title,sIcon:s.icon,tabName:tk}));
+    });
+  });
+  let filtered=all;
+  if(searchQuery) filtered=filtered.filter(i=>i.q.toLowerCase().includes(searchQuery)||(i.detail||'').toLowerCase().includes(searchQuery));
+  if(searchFilters.size>0) filtered=filtered.filter(i=>searchFilters.has(i.tag));
+  if(!searchQuery&&searchFilters.size===0){res.innerHTML='<div class="empty">💡 Digite acima para buscar em todo o playbook</div>';return;}
+  if(filtered.length===0){res.innerHTML='<div class="empty">Nenhum resultado. Tente outros termos.</div>';return;}
+  const tagMap={q:'tag-q',i:'tag-i',c:'tag-c',r:'tag-r'};
+  const tagLabel={q:'pergunta-chave',i:'implicação',c:'contorno',r:'como resolve'};
+  const hq=val?val.toLowerCase():'';
+  res.innerHTML=`<div class="search-count">${filtered.length} resultado${filtered.length!==1?'s':''} encontrado${filtered.length!==1?'s':''}</div>`+
+    filtered.slice(0,40).map((item,idx)=>{
+      const id=`sr_${idx}`;const isE=expandedItems[id];
+      return`<div class="item-card${isE?' expanded':''}" onclick="toggleItem('${id}')">
+        <div class="ic-q">${highlight(item.q,hq)}</div>
+        <div class="ic-meta">
+          <span class="ic-tag ${tagMap[item.tag]}">${tagLabel[item.tag]}</span>
+          <span class="ic-section">${item.sIcon} ${item.section} · ${item.tabName}</span>
+        </div>
+        ${item.detail?`<div class="item-detail">${highlight(item.detail,hq)}</div>`:''}
+      </div>`;}).join('');
+}
+
+renderSections();
+</script>
+</body>
+</html>
