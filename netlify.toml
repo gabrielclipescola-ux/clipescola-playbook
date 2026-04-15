@@ -2,5 +2,8 @@
   publish = "."
   command = ""
 
+[build.environment]
+  NODE_VERSION = "20"
+
 [context.production]
-  environment = { NODE_VERSION = "18" }
+  base = ""
